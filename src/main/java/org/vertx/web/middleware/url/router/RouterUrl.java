@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.vertx.web.annotations.Interceptor;
@@ -52,20 +51,17 @@ public class RouterUrl {
     }
 
     public void pathConfig() {
-        this.router.routeWithRegex("/.*").handler(BodyHandler.create()).handler(routingContext -> {
-            routingContext.response().setChunked(true);// 必须设置
+        this.router.routeWithRegex("/.*").handler(BodyHandler.create()).blockingHandler(routingContext -> {
             // 进行拦截处理
             // step1 初始化拦截器
             if (!new PathInterceptor(webConfig).intercept(routingContext.request(), routingContext.response())) {// 找不到路径
-                routingContext.response().write("404 NOT FIND");
-                routingContext.next();
+                routingContext.response().end("404 NOT FIND");
                 return;
             }
 
             // step2 请求方式拦截
             if (!new RequestMethodHandler(webConfig).intercept(routingContext.request(), routingContext.response())) {// 请求方式不匹配
-                routingContext.response().write("method is not " + routingContext.request().method().toString());
-                routingContext.next();
+                routingContext.response().end("method is not " + routingContext.request().method().toString());
                 return;
             }
 
@@ -87,7 +83,6 @@ public class RouterUrl {
                     )
                             && !interceptor.intercept(routingContext.request(), routingContext.response()) // 拦截器逻辑正确
                     ) {
-                        routingContext.next();
                         return;
                     }
                 }
@@ -170,28 +165,25 @@ public class RouterUrl {
                         params.add(OBJECT_MAPPER.readValue(jsonObject, parameter.getType()));
                     }
                 }
+
                 Object result = method.invoke(entity.getObject(), params.toArray());
-                routingContext.response().write(OBJECT_MAPPER.writeValueAsString(result),
+                routingContext.response().end(OBJECT_MAPPER.writeValueAsString(result),
                         "GBK");
+                return;
             } catch (Throwable throwable) {
                 InvocationTargetException targetException = (InvocationTargetException) throwable;
                 // 拿到目标异常
                 Throwable targeThrowable = targetException.getTargetException();
-
                 // 出现异常信息,反馈给前端
                 try {
-                    routingContext.response().write("{\"message\" : \"" + targeThrowable.getMessage() + "\"}",
+                    routingContext.response().end("{\"message\" : \"" + targeThrowable.getMessage() + "\"}",
                             "GBK");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                routingContext.next();
                 return;
             }
-            routingContext.next();
-        }).failureHandler(ctx -> {// 捕获异常信息
-            ctx.response().write(ctx.failure().getMessage().replace("Response head already sent", ""));
-            ctx.end();
+
         });
     }
 

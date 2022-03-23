@@ -16,6 +16,6 @@ public class InitImpl implements InitInterface {
     @Override
     public void start(int port, String... configs) {
         Vertx.vertx().deployVerticle(new AbstractVerticleImpl(port, configs),
-                new DeploymentOptions().setMaxWorkerExecuteTime(3000));
+                new DeploymentOptions().setMaxWorkerExecuteTime(2000));
     }
 }

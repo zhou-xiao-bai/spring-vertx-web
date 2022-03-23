@@ -5,6 +5,9 @@ import org.vertx.web.annotations.Interceptor;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 
+/**
+ * 拦截器
+ */
 @Interceptor(url = "/TestController/v1", regex = "/TestController/.*")
 public class TestInter implements org.vertx.web.middleware.url.handler.Interceptor {
 
