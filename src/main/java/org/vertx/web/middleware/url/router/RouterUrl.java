@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.vertx.web.annotations.Interceptor;
 import org.vertx.web.annotations.Param;
 import org.vertx.web.config.ControllerEntity;
@@ -95,23 +97,48 @@ public class RouterUrl {
             Method method = entity.getMethod();
 
             if (method.isAnnotationPresent(Permissions.class)) {
-                Permissions permissions = method.getAnnotation(Permissions.class);
-                // 拿到当前接口需要的角色
-                String[] roles = permissions.roles();
-                // 拿到头部的header
-                String token = routingContext.request().headers().get("token");
-                // 通过token拿到用户
-                User user = Security.getUser(token);
-                // 用户没登陆
-                if (Objects.isNull(user)) {
-                    throw new UserLoginException();
-                }
+                try {
+                    Permissions permissions = method.getAnnotation(Permissions.class);
+                    // 拿到当前接口需要的角色
+                    String[] roles = permissions.roles();
+                    // 拿到头部的header
+                    String token = routingContext.request().getHeader("token");
+                    if (StringUtils.isBlank(token)) {
+                        throw new RuntimeException("Token not find error");
+                    }
+                    // 通过token拿到用户
+                    User user = Security.getUser(token);
+                    // 用户没登陆
+                    if (Objects.isNull(user)) {
+                        throw new UserLoginException();
+                    }
 
-                // 获取当前用户角色权限标识符
-                Set<rbac.framework.object.Permissions> pis = user.getRole().getPermissions();
-                // 进行鉴权(具体实现在Auth实现类里面做)@param pis当前用户权限标识符 @param roles当前接口所需角色
-                if (!Security.auth().authentication(pis, roles)) {// 无权限抛出异常
-                    throw new RuntimeException("No auth");
+                    // 获取当前用户角色权限标识符
+                    Set<rbac.framework.object.Permissions> pis = user.getRole().getPermissions();
+                    // 进行鉴权(具体实现在Auth实现类里面做)@param pis当前用户权限标识符 @param roles当前接口所需角色
+                    if (!Security.auth().authentication(pis, roles)) {// 无权限抛出异常
+                        throw new RuntimeException("No auth");
+                    }
+                } catch (Throwable throwable) {
+                    // 如果是运行时异常
+                    if (throwable instanceof RuntimeException) {
+                        routingContext.response().end("{\"message\" : \"" + throwable.getMessage() + "\"}",
+                                "GBK");
+                        return;
+                    }
+                    // 其他未知异常
+                    InvocationTargetException targetException = (InvocationTargetException) throwable;
+                    // 拿到目标异常
+                    Throwable targeThrowable = targetException.getTargetException();
+                    System.out.println(targeThrowable.getMessage());
+                    // 出现异常信息,反馈给前端
+                    try {
+                        routingContext.response().end("{\"message\" : \"" + targeThrowable.getMessage() + "\"}",
+                                "GBK");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return;
                 }
             }
 

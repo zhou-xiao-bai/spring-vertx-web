@@ -15,6 +15,11 @@ public class AuthIm implements rbac.framework.interfaces.Auth {
      */
     @Override
     public boolean authentication(Set<Permissions> pis, String[] roles) {
+        // 从db里面查询当前角色
+
+        // 拿到角色的pis
+
+        // 与参数的pis进行比较
         return false;
     }
 
