@@ -11,6 +11,7 @@ import org.vertx.web.test.entity.Pojo;
 import org.vertx.web.test.service.TestService;
 
 import io.vertx.core.http.HttpServerRequest;
+import rbac.framework.annotations.Permissions;
 
 @Controller
 public class TestController {

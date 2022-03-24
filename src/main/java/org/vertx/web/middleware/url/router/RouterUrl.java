@@ -18,6 +18,7 @@ import org.vertx.web.annotations.Interceptor;
 import org.vertx.web.annotations.Param;
 import org.vertx.web.config.ControllerEntity;
 import org.vertx.web.config.WebConfig;
+import org.vertx.web.middleware.auth.AuthUrlHandler;
 import org.vertx.web.middleware.url.handler.method.RequestMethodHandler;
 import org.vertx.web.middleware.url.handler.path.PathInterceptor;
 
@@ -96,36 +97,25 @@ public class RouterUrl {
             // step 5 对参数进行检验
             Method method = entity.getMethod();
 
+            // 如果需要鉴权的接口,走鉴权过程
             if (method.isAnnotationPresent(Permissions.class)) {
                 try {
                     Permissions permissions = method.getAnnotation(Permissions.class);
                     // 拿到当前接口需要的角色
                     String[] roles = permissions.roles();
-                    // 拿到头部的header
-                    String token = routingContext.request().getHeader("token");
-                    if (StringUtils.isBlank(token)) {
-                        throw new RuntimeException("Token not find error");
-                    }
-                    // 通过token拿到用户
-                    User user = Security.getUser(token);
-                    // 用户没登陆
-                    if (Objects.isNull(user)) {
-                        throw new UserLoginException();
-                    }
-
-                    // 获取当前用户角色权限标识符
-                    Set<rbac.framework.object.Permissions> pis = user.getRole().getPermissions();
-                    // 进行鉴权(具体实现在Auth实现类里面做)@param pis当前用户权限标识符 @param roles当前接口所需角色
-                    if (!Security.auth().authentication(pis, roles)) {// 无权限抛出异常
-                        throw new RuntimeException("No auth");
-                    }
+                    // 对用户进行鉴权
+                    new AuthUrlHandler(routingContext.request(), routingContext.response(), roles);
                 } catch (Throwable throwable) {
-                    // 如果是运行时异常
                     if (throwable instanceof RuntimeException) {
-                        routingContext.response().end("{\"message\" : \"" + throwable.getMessage() + "\"}",
-                                "GBK");
+                        try {
+                            routingContext.response().end("{\"message\" : \"" + throwable.getMessage() + "\"}",
+                                    "GBK");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         return;
                     }
+
                     // 其他未知异常
                     InvocationTargetException targetException = (InvocationTargetException) throwable;
                     // 拿到目标异常

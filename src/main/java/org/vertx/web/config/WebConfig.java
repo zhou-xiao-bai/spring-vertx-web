@@ -64,7 +64,7 @@ public class WebConfig {
         this.abstractApplicationContext = new ClassPathXmlApplicationContext(configFile);
         // 开始配置bean
         this.abstractApplicationContext.start();
-        // 设置权限
+        // 设置权限(从SpringBean中提取)
         Security.setAuth(this.abstractApplicationContext.getBean(Auth.class));
         // 配置全局自定义扫描
         this.reflections = new Reflections("", Arrays.asList(
