@@ -61,7 +61,7 @@ public class WebConfig {
     public WebConfig(Vertx vertx, String... configFile) {
         this.configFile = configFile;
         // 用于拉取Spring配置文件
-        this.abstractApplicationContext = new ClassPathXmlApplicationContext(configFile);
+        this.abstractApplicationContext = new ClassPathXmlApplicationContext(this.configFile);
         // 开始配置bean
         this.abstractApplicationContext.start();
         // 设置权限(从SpringBean中提取)

@@ -98,7 +98,7 @@ public class RouterUrl {
                     // 拿到当前接口需要的角色
                     String[] roles = permissions.roles();
                     // 对用户进行鉴权
-                    new AuthUrlHandler(routingContext.request(), routingContext.response(), roles);
+                    new AuthUrlHandler(routingContext.request(), roles);
                 } catch (Throwable throwable) {
                     if (throwable instanceof RuntimeException) {
                         try {

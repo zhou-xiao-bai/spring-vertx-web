@@ -18,17 +18,14 @@ public class AuthUrlHandler {
 
     private HttpServerRequest httpServerRequest;
 
-    private HttpServerResponse httpServerResponse;
-
     /**
      * 
      * @param request
      * @param response
      * @param roles    当前接口的roles
      */
-    public AuthUrlHandler(HttpServerRequest request, HttpServerResponse response, String[] roles) {
+    public AuthUrlHandler(HttpServerRequest request, String[] roles) {
         this.httpServerRequest = request;
-        this.httpServerResponse = response;
 
         // 检测token是否为空
         if (this.isBlanktoken(this.getToken())) {
