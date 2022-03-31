@@ -11,7 +11,6 @@ import org.vertx.web.test.entity.Pojo;
 import org.vertx.web.test.service.TestService;
 
 import io.vertx.core.http.HttpServerRequest;
-import rbac.framework.annotations.Permissions;
 
 @Controller
 public class TestController {
@@ -21,8 +20,8 @@ public class TestController {
     private TestService testService;
 
     @RequestMappping(version = "v1", type = Method.GET)
-    public Object result(Pojo pojo, HttpServerRequest request) {
-        System.out.println("Age is " + pojo.getAge());
+    public Object result(Pojo pojo, Pojo pojo2, HttpServerRequest request) {
+        System.out.println("Age is " + pojo2.getAge());
         System.out.println("Name is " + pojo.getName());
         testService.test1();
         return new HashMap<String, Object>() {

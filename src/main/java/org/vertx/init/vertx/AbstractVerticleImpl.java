@@ -33,7 +33,7 @@ public class AbstractVerticleImpl extends AbstractVerticle {
         }, res -> {
             HttpServer server = super.vertx.createHttpServer();
             server.requestHandler(((Router) res.result())).listen(this.port).onSuccess(handler -> {
-                System.out.println("启动成功");
+                System.out.println("Server is start");
             });
         });
     }

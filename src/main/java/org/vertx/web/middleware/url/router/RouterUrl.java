@@ -4,16 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.apache.commons.lang3.StringUtils;
 import org.vertx.web.annotations.Interceptor;
 import org.vertx.web.annotations.Param;
 import org.vertx.web.config.ControllerEntity;
@@ -27,10 +24,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import rbac.framework.Security;
 import rbac.framework.annotations.Permissions;
-import rbac.framework.exceptions.UserLoginException;
-import rbac.framework.object.User;
 
 /**
  * @author yangcong
@@ -120,7 +114,6 @@ public class RouterUrl {
                     InvocationTargetException targetException = (InvocationTargetException) throwable;
                     // 拿到目标异常
                     Throwable targeThrowable = targetException.getTargetException();
-                    System.out.println(targeThrowable.getMessage());
                     // 出现异常信息,反馈给前端
                     try {
                         routingContext.response().end("{\"message\" : \"" + targeThrowable.getMessage() + "\"}",
