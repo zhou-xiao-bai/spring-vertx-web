@@ -13,6 +13,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.MethodParameterNamesScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
+import org.rpc.service.config.tcp.Tcp;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.vertx.web.annotations.Controller;
@@ -51,6 +52,9 @@ public class WebConfig {
      */
     private Map<String, ControllerEntity> url = new ConcurrentHashMap<>();
 
+    /**
+     * 路由
+     */
     private RouterUrl routerUrl;
 
     /**
@@ -64,6 +68,9 @@ public class WebConfig {
         this.abstractApplicationContext = new ClassPathXmlApplicationContext(this.configFile);
         // 开始配置bean
         this.abstractApplicationContext.start();
+
+        new RpcConfig(this.abstractApplicationContext);
+
         // 设置权限(从SpringBean中提取)
         Security.setAuth(this.abstractApplicationContext.getBean(Auth.class));
         // 配置全局自定义扫描

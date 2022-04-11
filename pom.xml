@@ -62,7 +62,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>5.2.1.RELEASE</version>
+            <version>5.3.18</version>
         </dependency>
 
         <!-- 引入Spring上下文 -->
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.2</version>
+            <version>2.13.2.2</version>
         </dependency>
 
         <dependency>
@@ -114,6 +114,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.rpc</groupId>
+            <artifactId>rpc</artifactId>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
 

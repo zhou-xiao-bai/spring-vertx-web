@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.vertx.web.annotations.Controller;
 import org.vertx.web.annotations.RequestMappping;
+import org.vertx.web.config.RpcConfig;
 import org.vertx.web.method.Method;
 import org.vertx.web.test.entity.Pojo;
 import org.vertx.web.test.service.TestService;
@@ -21,6 +22,8 @@ public class TestController {
 
     @RequestMappping(version = "v1", type = Method.GET)
     public Object result(Pojo pojo, Pojo pojo2, HttpServerRequest request) {
+        System.out.println(
+                RpcConfig.getService("hello").<String>sendService("HelloService", "hello", new Object[] { "hello" }));
         System.out.println("Age is " + pojo2.getAge());
         System.out.println("Name is " + pojo.getName());
         testService.test1();

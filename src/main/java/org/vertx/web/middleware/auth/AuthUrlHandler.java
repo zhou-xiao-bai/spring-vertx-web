@@ -6,7 +6,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.http.HttpServerResponse;
 import rbac.framework.Security;
 import rbac.framework.exceptions.UserLoginException;
 
